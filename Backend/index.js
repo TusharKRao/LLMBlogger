@@ -64,23 +64,23 @@ app.get('/api/posts', async (req, res) => {
     try {
         let posts;
         if (key) {
-            // If a key is provided, filter by the key and give the latest entry
+
             posts = await BlogPost.findOne({ key: key }).sort({ createdAt: -1 });
         } else
         //provide only latest entries for each key in the database
         {
             posts = await BlogPost.aggregate([
                     {
-                        $sort: { key: 1, createdAt: -1 } // Sort by key and then by createdAt descending
+                        $sort: { key: 1, createdAt: -1 }
                     },
                     {
                         $group: {
-                            _id: "$key",                // Group by key
-                            post: { $first: "$$ROOT" }  // Take the most recent post in each group
+                            _id: "$key",
+                            post: { $first: "$$ROOT" }
                         }
                     },
                     {
-                        $replaceRoot: { newRoot: "$post" } // Replace root with the most recent post
+                        $replaceRoot: { newRoot: "$post" }
                     }
                 ]);
         }
@@ -91,7 +91,7 @@ app.get('/api/posts', async (req, res) => {
     }
 });
 
-// DELETE /api/posts/:id - Deletes a specific blog post by ID
+// DELETE /api/posts/:id - Deletes a specific blog post by key
 app.delete('/api/posts', async (req, res) => {
     const { key } = req.query;
 
