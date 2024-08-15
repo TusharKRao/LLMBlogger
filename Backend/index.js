@@ -16,6 +16,7 @@ mongoose.connect('mongodb://localhost:27017/blog', {
 });
 
 
+
 // Blog Post Schema
 const blogPostSchema = new mongoose.Schema({
     title: String,
