@@ -92,17 +92,23 @@ app.get('/api/posts', async (req, res) => {
 });
 
 // DELETE /api/posts/:id - Deletes a specific blog post by ID
-app.delete('/api/posts/:id', async (req, res) => {
-    const { id } = req.params;
+app.delete('/api/posts', async (req, res) => {
+    const { key } = req.query;
+
+    if (!key) {
+        return res.status(400).json({ message: 'Key is required to delete posts' });
+    }
 
     try {
-        const deletedPost = await BlogPost.findByIdAndDelete(id);
-        if (!deletedPost) {
-            return res.status(404).json({ message: 'Blog post not found' });
+        const result = await BlogPost.deleteMany({ key: key });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'No blog posts found with the specified key' });
         }
-        res.status(200).json({ message: 'Blog post deleted', deletedPost });
+
+        res.status(200).json({ message: 'Blog posts deleted', deletedCount: result.deletedCount });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting blog post', error });
+        res.status(500).json({ message: 'Error deleting blog posts', error });
     }
 });
 
